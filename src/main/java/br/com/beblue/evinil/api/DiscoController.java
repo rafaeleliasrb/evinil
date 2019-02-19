@@ -6,10 +6,14 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.beblue.evinil.enums.GeneroMusical;
@@ -28,10 +32,11 @@ public class DiscoController {
 		this.discoRepository = discoRepository;
 	}
 
-	@GetMapping("byGenero/{genero}")
-	public List<Disco> findDiscos(@PathVariable String genero) {
-		return discoRepository.findByGenero(GeneroMusical.byGenero(genero)).stream()
-				.sorted((d1, d2)->d1.getNome().compareTo(d2.getNome()))
+	@GetMapping(value = "byGenero/{genero}", params = {"page", "size"} )
+	public List<Disco> findDiscos(@PathVariable String genero, 
+			@RequestParam("page") int page, @RequestParam("size") int size) {
+		return discoRepository.findByGenero(GeneroMusical.byGenero(genero), 
+					PageRequest.of(page, size, Sort.by(Direction.ASC, "nome"))).stream()
 				.collect(Collectors.toList());
 	}
 	

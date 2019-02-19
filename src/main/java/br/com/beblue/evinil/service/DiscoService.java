@@ -20,9 +20,8 @@ public class DiscoService {
 		this.discoRepository = discoRepository;
 	}
 	
-	public List<Disco> findDiscoByGenero(String genero) {
-		return discoRepository.findByGenero(GeneroMusical.byGenero(genero)).stream()
-				.sorted((d1, d2)->d1.getNome().compareTo(d2.getNome()))
+	/*public List<Disco> findDiscoByGenero(String genero, int page, int size) {
+		return discoRepository.findByGeneroOrderByNomeAsc(GeneroMusical.byGenero(genero), new pageresul).stream()
 				.collect(Collectors.toList());
-	}
+	}*/
 }
