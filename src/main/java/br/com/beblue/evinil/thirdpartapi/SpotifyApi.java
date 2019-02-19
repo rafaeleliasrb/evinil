@@ -1,5 +1,6 @@
 package br.com.beblue.evinil.thirdpartapi;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -36,35 +37,39 @@ public class SpotifyApi {
 		this.restTemplate = restTemplate;
 	}
 	
-	public DiscosGenero findDiscoByGenero(GeneroMusical genero) throws Exception {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-		headers.set("Authorization", "Bearer " + getToken().getAccessToken());
-
-		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search")
-		        .queryParam("q", genero.getNome())
-		        .queryParam("type", "album")
-		        .queryParam("market", "BR")
-		        .queryParam("limit", 50);
-		
-		HttpEntity<String> entity = new HttpEntity<>(headers);
-
-		ResponseEntity<String> responseEntity = restTemplate.exchange(builder.toUriString(), 
-				HttpMethod.GET, entity, String.class);
+	public DiscosGenero findDiscoByGenero(GeneroMusical genero) {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+			headers.set("Authorization", "Bearer " + getToken().getAccessToken());
 	
-		ObjectMapper objectMapper = new ObjectMapper();
-		objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-		return objectMapper.readValue(responseEntity.getBody(), DiscosGenero.class);
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search")
+			        .queryParam("q", genero.getNome())
+			        .queryParam("type", "album")
+			        .queryParam("market", "BR")
+			        .queryParam("limit", 50);
+			
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+	
+			ResponseEntity<String> responseEntity = restTemplate.exchange(builder.toUriString(), 
+					HttpMethod.GET, entity, String.class);
+		
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+			return objectMapper.readValue(responseEntity.getBody(), DiscosGenero.class);
+		} catch (IOException e) {
+			throw new RuntimeException("Não foi possível recuperar os discos pelo gênero");
+		}
 	}
 	
-	private Token getToken() throws Exception {
+	private Token getToken() {
 		if(token == null || token.isExpirado()) 
 			return geraNovoToken();
 		return token;
 	}
 	
-	private Token geraNovoToken() throws Exception {
+	private Token geraNovoToken() {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -79,7 +84,7 @@ public class SpotifyApi {
 			ObjectMapper objectMapper = new ObjectMapper();
 			return objectMapper.readValue(responseEntity.getBody(), Token.class);
 		} catch (Exception e) {
-			throw new Exception("Não foi possível recuperar o token de acesso");
+			throw new RuntimeException("Não foi possível recuperar o token de acesso");
 		}
 	}
 }
