@@ -45,8 +45,8 @@ public class VendaController {
 		if(dataInicio == null) dataInicio = LocalDate.now();
 		if(dataFim == null) dataFim = LocalDate.now();
 		
-		return vendaRepository.findVendas(
-				dataInicio.atStartOfDay(), dataFim.atStartOfDay(), 
+		return vendaRepository.findByDataGreaterThanEqualAndDataLessThanEqual(
+				dataInicio.atStartOfDay(), dataFim.atTime(23, 59, 59), 
 				PageRequest.of(page, size, Sort.by(Direction.ASC, "data"))).stream()
 			.collect(Collectors.toList());
 	}
@@ -64,7 +64,7 @@ public class VendaController {
 		} catch (EntityNotFoundException e) {
 			throw new EntityNotFoundException(e.getMessage());
 		} catch (Exception e) {
-			throw new Exception("Erro ao salvar a venda");
+			throw new Exception("Erro ao salvar a venda", e);
 		}
 	}
 	

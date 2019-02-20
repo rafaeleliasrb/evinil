@@ -22,8 +22,6 @@ public class EvinilApplication {
 	
 	@Bean
 	public CommandLineRunner initData(Database database){
-	   return args -> {
-		   database.carregaDiscosBancoDados();
-	   };
+	   return args -> database.carregaDiscosBancoDados();
 	}
 }

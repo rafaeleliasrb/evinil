@@ -1,13 +1,15 @@
 package br.com.beblue.evinil.model;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -18,15 +20,12 @@ public class Item {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	/*@JsonIgnore
-	@ManyToOne
-	@JoinColumn(nullable = false, updatable = false, insertable = true)
-	private Venda venda;*/
-	
 	@ManyToOne
 	private Disco disco;
 	
 	private int quantidade;
+	
+	private BigDecimal desconto;
 
 	public Item() {}
 	
@@ -34,14 +33,18 @@ public class Item {
 		this.disco = disco;
 		this.quantidade = quantidade;
 	}
+	
+	public void calculaDesconto() {
+		LocalDateTime data = LocalDateTime.now();
+		desconto = disco.getPreco()
+				.multiply(BigDecimal.valueOf(quantidade))
+				.multiply(BigDecimal.valueOf(Cashback.findByGeneroEDiaDaSemana(disco.getGenero(), data.getDayOfWeek())))
+				.divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN);
+	}
 
 	public Long getId() {
 		return id;
 	}
-
-	/*public Venda getVenda() {
-		return venda;
-	}*/
 	
 	public Disco getDisco() {
 		return disco;
@@ -57,5 +60,9 @@ public class Item {
 
 	public void setQuantidade(int quantidade) {
 		this.quantidade = quantidade;
+	}
+	
+	public BigDecimal getDesconto() {
+		return desconto;
 	}
 }

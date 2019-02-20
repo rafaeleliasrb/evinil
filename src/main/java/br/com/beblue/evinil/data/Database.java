@@ -28,9 +28,5 @@ public class Database {
 					return disco;
 				}))
 			.forEach(disco -> discoRepository.save(disco));
-		/*discosByGenero.put(GeneroMusical.POP, api.findDiscoByGenero(GeneroMusical.POP).getDiscos());
-		discosByGenero.put(GeneroMusical.CLASSIC, api.findDiscoByGenero(GeneroMusical.CLASSIC).getDiscos());
-		discosByGenero.put(GeneroMusical.MPB, api.findDiscoByGenero(GeneroMusical.MPB).getDiscos());
-		discosByGenero.put(GeneroMusical.ROCK, api.findDiscoByGenero(GeneroMusical.ROCK).getDiscos());*/
 	}
 }
