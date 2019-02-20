@@ -33,7 +33,7 @@ public class DiscoController {
 	}
 
 	@GetMapping(value = "byGenero/{genero}", params = {"page", "size"} )
-	public List<Disco> findDiscos(@PathVariable String genero, 
+	public List<Disco> findAll(@PathVariable String genero, 
 			@RequestParam("page") int page, @RequestParam("size") int size) {
 		return discoRepository.findByGenero(GeneroMusical.byGenero(genero), 
 					PageRequest.of(page, size, Sort.by(Direction.ASC, "nome"))).stream()
@@ -41,7 +41,7 @@ public class DiscoController {
 	}
 	
 	@GetMapping("byId/{id}")
-	public Disco findDiscoById(@PathVariable String id) {
+	public Disco findById(@PathVariable String id) {
 		return discoRepository.findById(id)
 				.orElseThrow(() -> new EntityNotFoundException("Disco não encontrado"));
 	}

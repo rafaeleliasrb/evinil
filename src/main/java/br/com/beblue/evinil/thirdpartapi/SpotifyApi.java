@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.beblue.evinil.enums.GeneroMusical;
-import br.com.beblue.evinil.model.DiscosGenero;
+import br.com.beblue.evinil.viewmodel.DiscosGeneroViewModel;
 
 @Component
 public class SpotifyApi {
@@ -37,7 +37,7 @@ public class SpotifyApi {
 		this.restTemplate = restTemplate;
 	}
 	
-	public DiscosGenero findDiscoByGenero(GeneroMusical genero) {
+	public DiscosGeneroViewModel findDiscoByGenero(GeneroMusical genero) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
@@ -57,7 +57,7 @@ public class SpotifyApi {
 		
 			ObjectMapper objectMapper = new ObjectMapper();
 			objectMapper.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-			return objectMapper.readValue(responseEntity.getBody(), DiscosGenero.class);
+			return objectMapper.readValue(responseEntity.getBody(), DiscosGeneroViewModel.class);
 		} catch (IOException e) {
 			throw new RuntimeException("Não foi possível recuperar os discos pelo gênero");
 		}

@@ -9,7 +9,7 @@ import br.com.beblue.evinil.enums.GeneroMusical;
 import br.com.beblue.evinil.model.Disco;
 
 @Repository
-public interface DiscoRepository extends CrudRepository<Disco, String>{
+public interface DiscoRepository extends CrudRepository<Disco, String> {
 
 	public Page<Disco> findByGenero(GeneroMusical genero, Pageable pageable);
 	
