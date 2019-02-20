@@ -15,7 +15,6 @@ public class ApiExceptionHandler {
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErroView handleException(Exception ex) {
-    	ex.printStackTrace();
         return new ErroView(ex.getMessage());
     }
 

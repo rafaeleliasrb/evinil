@@ -2,9 +2,8 @@ package br.com.beblue.evinil.thirdpartapi;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Base64;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -23,18 +22,14 @@ import br.com.beblue.evinil.viewmodel.DiscosGeneroViewModel;
 @Component
 public class SpotifyApi {
 
-	@Value("${spotify.client.id}")
-	private String clientId;
-	
-	@Value("${spotify.client.secret}")
-	private String clientSecret;
-	
-	private Token token;
-	
 	private RestTemplate restTemplate;
 	
-	public SpotifyApi(RestTemplate restTemplate) {
+	private TokenFactory tokenFactory;
+	
+	@Autowired
+	public SpotifyApi(RestTemplate restTemplate, TokenFactory tokenFactory) {
 		this.restTemplate = restTemplate;
+		this.tokenFactory = tokenFactory;
 	}
 	
 	public DiscosGeneroViewModel findDiscoByGenero(GeneroMusical genero) {
@@ -42,7 +37,7 @@ public class SpotifyApi {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
 			headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-			headers.set("Authorization", "Bearer " + getToken().getAccessToken());
+			headers.set("Authorization", "Bearer " + tokenFactory.getToken().getAccessToken());
 	
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search")
 			        .queryParam("q", genero.getNome())
@@ -60,31 +55,6 @@ public class SpotifyApi {
 			return objectMapper.readValue(responseEntity.getBody(), DiscosGeneroViewModel.class);
 		} catch (IOException e) {
 			throw new RuntimeException("Não foi possível recuperar os discos pelo gênero");
-		}
-	}
-	
-	private Token getToken() {
-		if(token == null || token.isExpirado()) 
-			return geraNovoToken();
-		return token;
-	}
-	
-	private Token geraNovoToken() {
-		try {
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			String chave = clientId + ":" + clientSecret;
-			headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString(chave.getBytes()));
-	
-			HttpEntity<String> entity = new HttpEntity<>("grant_type=client_credentials", headers);
-	
-			ResponseEntity<String> responseEntity = restTemplate.exchange("https://accounts.spotify.com/api/token", 
-					HttpMethod.POST, entity, String.class);
-		
-			ObjectMapper objectMapper = new ObjectMapper();
-			return objectMapper.readValue(responseEntity.getBody(), Token.class);
-		} catch (Exception e) {
-			throw new RuntimeException("Não foi possível recuperar o token de acesso");
 		}
 	}
 }

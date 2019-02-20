@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,13 +19,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.beblue.evinil.model.Item;
 import br.com.beblue.evinil.model.Venda;
-import br.com.beblue.evinil.repository.DiscoRepository;
 import br.com.beblue.evinil.repository.VendaRepository;
-import br.com.beblue.evinil.viewmodel.ItemViewModel;
+import br.com.beblue.evinil.viewmodel.Mapper;
 import br.com.beblue.evinil.viewmodel.VendaViewModel;
 
 @CrossOrigin("*")
@@ -33,10 +33,15 @@ import br.com.beblue.evinil.viewmodel.VendaViewModel;
 public class VendaController {
 
 	@Autowired
-	private DiscoRepository discoRepository;
+	private Mapper mapper;
 	
 	@Autowired
 	private VendaRepository vendaRepository;
+	
+	public VendaController(Mapper mapper, VendaRepository vendaRepository) {
+		this.mapper = mapper;
+		this.vendaRepository = vendaRepository;
+	}
 	
 	@GetMapping(value = "byData/", params = {"dataInicio", "dataFim", "page", "size"})
 	public List<Venda> findAll(@RequestParam("dataInicio") @DateTimeFormat(pattern="dd/MM/yyyy") LocalDate dataInicio, 
@@ -58,25 +63,14 @@ public class VendaController {
 	}
 	
 	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
 	public Venda save(@RequestBody VendaViewModel vendaViewModel) throws Exception {
 		try {
-			return vendaRepository.save(toVenda(vendaViewModel));
+			return vendaRepository.save(mapper.toVenda(vendaViewModel));
 		} catch (EntityNotFoundException e) {
 			throw new EntityNotFoundException(e.getMessage());
 		} catch (Exception e) {
 			throw new Exception("Erro ao salvar a venda", e);
 		}
-	}
-	
-	private Venda toVenda(VendaViewModel vendaViewModel) {
-		Venda venda = new Venda();
-		vendaViewModel.getItens().stream().forEach(item -> venda.adicionaItens(toItem(item)));
-		return venda;
-	}
-	
-	private Item toItem(ItemViewModel viewModel) {
-		return new Item(discoRepository.findById(viewModel.getDisco())
-				.orElseThrow(() -> new EntityNotFoundException("Disco com id: " + viewModel.getDisco() + " não encontrado")), 
-			viewModel.getQuantidade());
 	}
 }

@@ -64,11 +64,11 @@ public class Item {
 		this.quantidade = quantidade;
 	}
 	
-	public BigDecimal getCashback() {
-		return cashback;
-	}
-	
 	public BigDecimal getValor() {
 		return disco.getPreco().multiply(BigDecimal.valueOf(quantidade)).setScale(2, RoundingMode.HALF_DOWN);
+	}
+	
+	public BigDecimal getCashback() {
+		return cashback;
 	}
 }

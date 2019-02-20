@@ -48,55 +48,6 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-			    <artifactId>docker-maven-plugin</artifactId>
-			    <version>0.4.14</version>
-
-				<configuration>
-			        <imageName>evinil</imageName>
-			        <baseImage>openjdk</baseImage>
-			        <entryPoint>["java", "-jar", "/${project.build.finalName}.jar"]</entryPoint>
-S			        <resources>
-			           	<resource>
-			             	<targetPath>/</targetPath>
-			             	<directory>${project.build.directory}</directory>
-			             	<include>${project.build.finalName}.jar</include>
-			           	</resource>
-			        </resources>
-      			</configuration>
-
-				<executions>
-					<execution>
-						<id>build-image</id>
-						<phase>package</phase>
-						<goals>
-							<goal>build</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>tag-image</id>
-						<phase>package</phase>
-						<goals>
-							<goal>tag</goal>
-						</goals>
-						<configuration>
-							<image>evinil:${project.version}</image>
-							<newName>registry.example.com/evinil:${project.version}</newName>
-						</configuration>
-					</execution>
-					<execution>
-						<id>push-image</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>push</goal>
-						</goals>
-						<configuration>
-							<imageName>registry.example.com/evinil:${project.version}</imageName>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
