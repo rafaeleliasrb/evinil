@@ -26,6 +26,8 @@ public class Disco {
 	
 	@Enumerated(EnumType.STRING)
 	private GeneroMusical genero;
+	
+	private BigDecimal preco = BigDecimal.valueOf(Math.random() * 49 + 1).setScale(2, RoundingMode.HALF_UP);
 
 	public String getId() {
 		return id;
@@ -36,7 +38,7 @@ public class Disco {
 	}
 
 	public BigDecimal getPreco() {
-		return BigDecimal.valueOf(Math.random() * 49 + 1).setScale(2, RoundingMode.HALF_UP);
+		return preco;
 	}
 
 	public String getNome() {

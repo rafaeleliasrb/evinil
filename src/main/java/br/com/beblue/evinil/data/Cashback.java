@@ -1,4 +1,4 @@
-package br.com.beblue.evinil.model;
+package br.com.beblue.evinil.data;
 
 import java.time.DayOfWeek;
 import java.util.HashMap;

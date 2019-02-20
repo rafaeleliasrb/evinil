@@ -16,7 +16,6 @@ import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
@@ -33,9 +32,9 @@ public class Venda {
 	@JoinColumn(name = "venda_id")
 	private List<Item> itens = new ArrayList<>();
 	
-	private BigDecimal total = BigDecimal.ZERO;
+	private BigDecimal valorTotal = BigDecimal.ZERO;
 	
-	private BigDecimal desconto = BigDecimal.ZERO;
+	private BigDecimal cashbackTotal = BigDecimal.ZERO;
 	
 	public Long getId() {
 		return id;
@@ -49,31 +48,25 @@ public class Venda {
 		return Collections.unmodifiableList(itens);
 	}
 
-	public BigDecimal getTotal() {
-		return total;
+	public BigDecimal getValorTotal() {
+		return valorTotal;
 	}
 	
-	public BigDecimal getDesconto() {
-		return desconto;
-	}
-	
-	@JsonProperty("a_pagar")
-	public BigDecimal getAPagar() {
-		return total.subtract(desconto);
+	public BigDecimal getCashbackTotal() {
+		return cashbackTotal;
 	}
 	
 	public void adicionaItens(Item item) {
-		item.calculaDesconto();
-		atualizaTotal(item);
-		atualizaDesconto(item);
+		atualizaValorTotal(item);
+		atualizaCashbackTotal(item);
 		itens.add(item);
 	}
 	
-	private void atualizaDesconto(Item novoItem) {
-		desconto = desconto.add(novoItem.getDesconto());
+	private void atualizaCashbackTotal(Item novoItem) {
+		cashbackTotal = cashbackTotal.add(novoItem.getCashback());
 	}
 	
-	private void atualizaTotal(Item novoItem) {
-		total = total.add(novoItem.getDisco().getPreco());
+	private void atualizaValorTotal(Item novoItem) {
+		valorTotal = valorTotal.add(novoItem.getValor());
 	}
 }

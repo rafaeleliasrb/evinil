@@ -12,6 +12,8 @@ import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import br.com.beblue.evinil.data.Cashback;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 public class Item {
@@ -23,21 +25,21 @@ public class Item {
 	@ManyToOne
 	private Disco disco;
 	
-	private int quantidade;
+	private int quantidade = 1;
 	
-	private BigDecimal desconto;
+	private BigDecimal cashback = BigDecimal.ZERO;
 
 	public Item() {}
 	
 	public Item(Disco disco, int quantidade) {
 		this.disco = disco;
 		this.quantidade = quantidade;
+		calculaCashback();
 	}
 	
-	public void calculaDesconto() {
+	private void calculaCashback() {
 		LocalDateTime data = LocalDateTime.now();
-		desconto = disco.getPreco()
-				.multiply(BigDecimal.valueOf(quantidade))
+		cashback = getValor()
 				.multiply(BigDecimal.valueOf(Cashback.findByGeneroEDiaDaSemana(disco.getGenero(), data.getDayOfWeek())))
 				.divide(BigDecimal.valueOf(100)).setScale(2, RoundingMode.HALF_DOWN);
 	}
@@ -62,7 +64,11 @@ public class Item {
 		this.quantidade = quantidade;
 	}
 	
-	public BigDecimal getDesconto() {
-		return desconto;
+	public BigDecimal getCashback() {
+		return cashback;
+	}
+	
+	public BigDecimal getValor() {
+		return disco.getPreco().multiply(BigDecimal.valueOf(quantidade)).setScale(2, RoundingMode.HALF_DOWN);
 	}
 }
